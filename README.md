@@ -12,7 +12,7 @@ Sistema web/PWA para la gestión integral de producción avícola de **TILCOR S.
 
 Reemplaza cuatro herramientas desconectadas (app Gallinero, planillas en papel, Don Gestión y Excel) por una única plataforma centralizada con alertas automáticas en tiempo real.
 
-**PWA en producción:** https://rad-licore.vercel.app
+**PWA en producción:** https://tilcorvercel.vercel.app
 
 ---
 
@@ -127,7 +127,7 @@ python manage.py runserver
 
 ## 🔗 Links
 
-- **PWA en producción:** https://rad-licore.vercel.app
+- **PWA en producción:** https://tilcorvercel.vercel.app
 - **Tablero del proyecto:** [GitHub Projects](https://github.com/Mcarnielli/Ingenieria-en-SFT-Tilcor/projects)
 
 ---
