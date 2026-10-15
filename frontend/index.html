@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TILCOR">
+<title>TILCOR — Gestión Avícola</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bd:#1A5276;--bm:#2980B9;--bl:#D6EAF8;
+  --gn:#1E8449;--gb:#D5F5E3;--gd:#145A32;
+  --am:#B7770D;--ab:#FEF9E7;
+  --rd:#C0392B;--rb:#FADBD8;
+  --gy:#5D6D7E;--gl:#F0F3F7;--gm:#E2E8F0;
+  --wh:#FFFFFF;--bk:#1A202C;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --r:14px;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  background:var(--gl);color:var(--bk);overflow:hidden;font-size:14px}
+
+/* ── ANIMACIONES GLOBALES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(41,128,185,.4)}50%{box-shadow:0 0 0 8px rgba(41,128,185,0)}}
+
+/* ── LAYOUT ── */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+#topbar{background:linear-gradient(135deg,var(--bd) 0%,#1F618D 100%);
+  color:var(--wh);height:56px;display:flex;align-items:center;
+  padding:0 14px;gap:10px;flex-shrink:0;
+  padding-top:var(--safe-t);
+  box-shadow:0 2px 12px rgba(26,82,118,.4)}
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 14px 80px;scroll-behavior:smooth}
+#tabbar{position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(0,0,0,.08);
+  display:flex;padding-bottom:var(--safe-b);z-index:100;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+
+/* ── TOPBAR ── */
+.brand-icon{width:36px;height:36px;background:rgba(255,255,255,.15);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;flex-shrink:0;border:1px solid rgba(255,255,255,.2);
+  transition:transform .2s}
+.brand-icon:active{transform:scale(.9)}
+.tb-title{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.tb-sub{font-size:9px;opacity:.65;display:block;margin-top:1px;letter-spacing:.02em}
+.online-dot{width:7px;height:7px;border-radius:50%;background:#2ECC71;
+  animation:pulse 2s infinite;flex-shrink:0}
+.tb-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  padding:3px 10px;font-size:10px;font-weight:700}
+
+/* ── TAB BAR ── */
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:6px 4px;cursor:pointer;color:var(--gy);font-size:9px;font-weight:600;
+  border:none;background:none;letter-spacing:.02em;position:relative;
+  transition:color .2s;min-height:52px;user-select:none}
+.tab i{font-size:21px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.tab.active{color:var(--bd)}
+.tab.active i{transform:translateY(-3px) scale(1.15)}
+.tab-indicator{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--bd);
+  transform-origin:center;transform:translateX(-50%) scaleX(0);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.tab.active .tab-indicator{transform:translateX(-50%) scaleX(1)}
+
+/* ── SECTIONS ── */
+.sec{display:none}
+.sec.active{display:block;animation:fadeUp .3s ease}
+.sec.active .kpi-c{animation:fadeUp .4s ease both}
+.sec.active .kpi-c:nth-child(1){animation-delay:.05s}
+.sec.active .kpi-c:nth-child(2){animation-delay:.1s}
+.sec.active .kpi-c:nth-child(3){animation-delay:.15s}
+.sec.active .kpi-c:nth-child(4){animation-delay:.2s}
+.sec.active .card{animation:fadeUp .4s ease both}
+.sec.active .card:nth-child(2){animation-delay:.1s}
+.sec.active .card:nth-child(3){animation-delay:.2s}
+.sec.active .card:nth-child(4){animation-delay:.3s}
+
+/* ── CARDS ── */
+.card{background:var(--wh);border-radius:var(--r);margin-bottom:12px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  overflow:hidden;transition:transform .2s,box-shadow .2s}
+.card:active{transform:scale(.99)}
+.card-hdr{padding:12px 14px;border-bottom:1px solid var(--gl);
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;
+  gap:7px;color:var(--bk)}
+.card-title i{font-size:17px;color:var(--bm)}
+.card-body{padding:14px}
+
+/* ── KPI ── */
+.kpi2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kpi-c{background:var(--wh);border-radius:var(--r);padding:14px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  position:relative;overflow:hidden;transition:transform .2s}
+.kpi-c:active{transform:scale(.97)}
+.kpi-icon{position:absolute;right:10px;top:10px;font-size:28px;opacity:.08}
+.kpi-lbl{font-size:10px;color:var(--gy);margin-bottom:6px;font-weight:600;
+  display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:24px;font-weight:800;line-height:1;color:var(--bk);
+  transition:all .3s}
+.kpi-delta{font-size:10px;margin-top:5px;font-weight:600;display:flex;align-items:center;gap:3px}
+.up{color:var(--gn)}.dn{color:var(--rd)}.nt{color:var(--gy)}
+.kpi-accent{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0}
+
+/* ── ALERTS ── */
+.alert{border-radius:12px;padding:12px 14px;margin-bottom:12px;
+  display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;
+  animation:slideInRight .3s ease;border-left-width:4px;border-left-style:solid}
+.alert i{font-size:19px;flex-shrink:0;margin-top:1px}
+.alert-am{background:var(--ab);border-color:#F39C12;color:#7D6608}
+.alert-rd{background:var(--rb);border-color:var(--rd);color:var(--rd)}
+.alert-gn{background:var(--gb);border-color:var(--gn);color:var(--gd)}
+.alert-bl{background:var(--bl);border-color:var(--bm);color:var(--bd)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;
+  border:1.5px solid var(--gm);border-radius:10px;font-size:13px;font-weight:600;
+  cursor:pointer;background:var(--wh);color:var(--bk);
+  transition:all .2s;user-select:none;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;border-radius:50%;width:100%;height:100%;
+  top:0;left:0;background:rgba(0,0,0,.1);transform:scale(0);opacity:0;
+  transition:transform .4s,opacity .4s}
+.btn:active::after{transform:scale(2);opacity:1;transition:0s}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--bd),var(--bm));
+  color:var(--wh);border-color:transparent;
+  box-shadow:0 4px 12px rgba(26,82,118,.35)}
+.btn-p:active{box-shadow:0 2px 6px rgba(26,82,118,.3)}
+.btn-gn{background:linear-gradient(135deg,var(--gd),var(--gn));
+  color:var(--wh);border-color:transparent;
+  box-shadow:0 4px 12px rgba(30,132,73,.3)}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* ── FORMS ── */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:10px;font-weight:700;color:var(--gy);text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{font-size:15px;padding:12px 14px;
+  border:2px solid var(--gm);border-radius:10px;
+  background:var(--gl);color:var(--bk);width:100%;
+  outline:none;transition:all .2s;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--bm);background:var(--wh);
+  box-shadow:0 0 0 3px rgba(41,128,185,.12)}
+input[type=number]{-moz-appearance:textfield}
+.computed{padding:12px 14px;background:linear-gradient(135deg,var(--gb),#E8F8F5);
+  border:2px solid var(--gn);border-radius:10px;font-size:18px;font-weight:800;
+  text-align:center;transition:all .3s;color:var(--gn)}
+
+/* ── SENSORS ── */
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.s-card{background:var(--wh);border-radius:var(--r);padding:14px 12px;
+  border-left:4px solid #ccc;position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  transition:transform .2s,box-shadow .2s;overflow:hidden}
+.s-card::before{content:'';position:absolute;inset:0;opacity:.04;pointer-events:none}
+.s-card.ok{border-left-color:var(--gn)}.s-card.ok::before{background:var(--gn)}
+.s-card.warn{border-left-color:#F39C12}.s-card.warn::before{background:#F39C12}
+.s-card.crit{border-left-color:var(--rd);animation:glow 2s infinite}.s-card.crit::before{background:var(--rd)}
+.s-name{font-size:9px;font-weight:700;color:var(--gy);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.s-val{font-size:26px;font-weight:800;color:var(--bk);line-height:1;transition:all .3s}
+.s-unit{font-size:11px;color:var(--gy);margin-left:2px;font-weight:500}
+.s-dot{position:absolute;top:10px;right:10px;width:9px;height:9px;border-radius:50%}
+.ok .s-dot{background:var(--gn);animation:pulse 2s infinite}
+.warn .s-dot{background:#F39C12;animation:pulse 1s infinite}
+.crit .s-dot{background:var(--rd);animation:pulse .5s infinite}
+.s-icon{position:absolute;bottom:8px;right:10px;font-size:24px;opacity:.1}
+
+/* ── BADGES ── */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;
+  border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.02em}
+.bgn{background:var(--gb);color:var(--gd)}
+.bam{background:var(--ab);color:var(--am)}
+.brd{background:var(--rb);color:var(--rd)}
+.bbl{background:var(--bl);color:var(--bd)}
+.bgy{background:var(--gl);color:var(--gy)}
+
+/* ── HISTORY ROWS ── */
+.hrow{display:flex;justify-content:space-between;align-items:center;
+  padding:11px 0;border-bottom:1px solid var(--gl);
+  transition:background .15s;animation:fadeIn .3s ease}
+.hrow:last-child{border-bottom:none}
+.hrow:active{background:var(--gl)}
+.hrow-l{display:flex;flex-direction:column;gap:2px}
+.hrow-date{font-size:11px;color:var(--gy);font-weight:500}
+.hrow-main{font-size:14px;font-weight:600}
+
+/* ── PROGRESS BAR ── */
+.pb-bg{background:var(--gl);border-radius:20px;height:8px;flex:1;overflow:hidden}
+.pb-fill{height:8px;border-radius:20px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* ── MINI CHART ── */
+.mini-chart{display:flex;align-items:flex-end;gap:4px;height:56px;padding:0 2px}
+.mini-bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;
+  transition:height .6s cubic-bezier(.34,1.56,.64,1)}
+
+/* ── PROD LOG ── */
+.prod-row{background:var(--gl);border-radius:12px;padding:11px 13px;margin-bottom:8px;
+  animation:slideInLeft .3s ease both;border-left:3px solid var(--bm)}
+.prod-row-hdr{display:flex;justify-content:space-between;margin-bottom:5px}
+.prod-row-date{font-size:11px;color:var(--gy);font-weight:600}
+.prod-row-pct{font-size:13px;font-weight:800}
+.prod-row-details{display:flex;gap:10px;flex-wrap:wrap}
+.prod-detail{font-size:11px;color:var(--gy)}
+.prod-detail span{color:var(--bk);font-weight:700}
+
+/* ── VIABILIDAD ── */
+.viab-bar{margin:12px 0}
+.viab-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;font-weight:500}
+.viab-val{font-weight:800}
+
+/* ── CHART ── */
+.chart-wrap{height:170px;position:relative;margin:4px 0}
+
+/* ── SEC TITLE ── */
+.sec-title{font-size:11px;font-weight:700;color:var(--gy);text-transform:uppercase;
+  letter-spacing:.07em;margin:16px 0 8px;padding:0 2px;
+  display:flex;align-items:center;gap:6px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--gm)}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:200;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex;animation:fadeIn .2s ease}
+.modal-box{background:var(--wh);border-radius:22px 22px 0 0;width:100%;
+  max-height:92vh;overflow-y:auto;padding:20px 16px;
+  padding-bottom:calc(20px + var(--safe-b));
+  animation:slideInBottom .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideInBottom{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:36px;height:4px;background:var(--gm);border-radius:2px;margin:0 auto 18px}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(72px + var(--safe-b));left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--bk);color:var(--wh);padding:12px 20px;
+  border-radius:14px;font-size:13px;font-weight:600;z-index:400;
+  display:flex;align-items:center;gap:9px;opacity:0;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:linear-gradient(135deg,var(--gd),var(--gn))}
+.toast.err{background:linear-gradient(135deg,#922B21,var(--rd))}
+
+/* ── SKELETON ── */
+.skel{background:linear-gradient(90deg,#E2E8F0 25%,#F0F3F7 50%,#E2E8F0 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+
+/* ── IFRAME NAV ── */
+.dg-nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}
+.dg-nav::-webkit-scrollbar{display:none}
+.dg-btn{white-space:nowrap;flex-shrink:0}
+.dg-btn.active-dg{background:linear-gradient(135deg,var(--bd),var(--bm));
+  color:var(--wh);border-color:transparent}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;z-index:999;
+  background:linear-gradient(160deg,#0F2744 0%,var(--bd) 50%,#1F618D 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px}
+.login-card{background:var(--wh);border-radius:24px;padding:28px 22px;
+  width:100%;max-width:360px;
+  box-shadow:0 24px 64px rgba(0,0,0,.35)}
+.login-input-wrap{position:relative;margin-bottom:14px}
+.login-input-wrap label{font-size:10px;font-weight:700;color:var(--gy);
+  text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+#loginError{display:none;background:var(--rb);border:1.5px solid #F1948A;
+  border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--rd);
+  align-items:center;gap:8px;animation:slideInRight .3s ease}
+
+/* ── USER MENU ── */
+#userAvatar{width:33px;height:33px;background:rgba(255,255,255,.2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;
+  color:var(--wh);cursor:pointer;border:2px solid rgba(255,255,255,.35);
+  user-select:none;transition:transform .2s,background .2s;flex-shrink:0}
+#userAvatar:active{transform:scale(.9)}
+#userMenu{display:none;position:absolute;top:42px;right:0;
+  background:var(--wh);border-radius:16px;
+  box-shadow:0 12px 40px rgba(0,0,0,.2);min-width:190px;z-index:400;
+  overflow:hidden;animation:scaleIn .2s ease}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="ti ti-check" id="toastIcon"></i>
+  <span id="toastMsg"></span>
+</div>
+
+<div id="app">
+
+<!-- ── TOPBAR ── -->
+<div id="topbar">
+  <div class="brand-icon">🐔</div>
+  <div style="flex:1">
+    <div class="tb-title">TILCOR</div>
+    <span class="tb-sub" id="topSub">Sistema Avícola Integral</span>
+  </div>
+  <div class="tb-badge">
+    <div class="online-dot"></div>
+    <span>Online</span>
+  </div>
+  <div style="position:relative;margin-left:6px">
+    <div id="userAvatar" onclick="toggleUserMenu()">A</div>
+    <div id="userMenu">
+      <div style="padding:14px 16px;background:var(--gl);border-bottom:1px solid var(--gm)">
+        <div style="font-size:13px;font-weight:700;color:var(--bk)" id="userMenuNombre">—</div>
+        <div style="font-size:10px;color:var(--gy);margin-top:3px" id="userMenuRol">—</div>
+      </div>
+      <button onclick="cerrarSesion()"
+        style="width:100%;padding:13px 16px;background:none;border:none;cursor:pointer;
+          display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;
+          color:var(--rd);transition:background .15s"
+        onmouseover="this.style.background='var(--rb)'"
+        onmouseout="this.style.background='none'">
+        <i class="ti ti-logout" style="font-size:18px"></i>Cerrar sesión
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+<!-- ══ DASHBOARD ══ -->
+<div class="sec active" id="sec-dash">
+
+  <!-- SALUDO DINAMICO -->
+  <div style="margin-bottom:14px;padding:14px 16px;
+    background:linear-gradient(135deg,var(--bd) 0%,#1F618D 100%);
+    border-radius:var(--r);color:var(--wh);
+    box-shadow:0 4px 16px rgba(26,82,118,.3)">
+    <div style="font-size:11px;opacity:.7;margin-bottom:3px" id="dashFecha">—</div>
+    <div style="font-size:17px;font-weight:800" id="dashSaludo">Buenos días 👋</div>
+    <div style="font-size:12px;opacity:.75;margin-top:4px">Galpón 1 · Lote F1 · Semana de edad 89</div>
+  </div>
+
+  <!-- KPIs FILA 1 -->
+  <div class="kpi2">
+    <div class="kpi-c" style="border-top:3px solid var(--bd)">
+      <div class="kpi-icon"><i class="ti ti-egg"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-egg" style="color:var(--bd)"></i>Producción hoy</div>
+      <div class="kpi-val" id="kv1">2.940</div>
+      <div class="kpi-delta up"><i class="ti ti-trending-up"></i>+3.2% vs ayer</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--gn)">
+      <div class="kpi-icon"><i class="ti ti-chart-line"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-chart-line" style="color:var(--gn)"></i>% Postura</div>
+      <div class="kpi-val" id="kv2" style="color:var(--gn)">83.5%</div>
+      <div class="kpi-delta nt">Tabla 82.0% · +1.5pp</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--am)">
+      <div class="kpi-icon"><i class="ti ti-feather"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-feather" style="color:var(--am)"></i>Aves activas</div>
+      <div class="kpi-val" id="kv3">3.520</div>
+      <div class="kpi-delta dn"><i class="ti ti-trending-down"></i>-2 muertas hoy</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--gn)">
+      <div class="kpi-icon"><i class="ti ti-currency-dollar"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-currency-dollar" style="color:var(--gn)"></i>Ventas totales</div>
+      <div class="kpi-val" id="kv4" style="font-size:20px">$254M</div>
+      <div class="kpi-delta nt">551 ventas</div>
+    </div>
+  </div>
+
+  <!-- KPIs FILA 2 -->
+  <div class="kpi2">
+    <div class="kpi-c" style="border-top:3px solid var(--rd)">
+      <div class="kpi-icon"><i class="ti ti-skull"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-skull" style="color:var(--rd)"></i>Mort. semanal</div>
+      <div class="kpi-val" style="color:var(--am)">0.77%</div>
+      <div class="kpi-delta bam">⚠️ Umbral 0.5%</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--gy)">
+      <div class="kpi-icon"><i class="ti ti-box"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-box" style="color:var(--gy)"></i>Cajones hoy</div>
+      <div class="kpi-val">98</div>
+      <div class="kpi-delta nt">x 360 huevos</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--bm)">
+      <div class="kpi-icon"><i class="ti ti-users"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-users" style="color:var(--bm)"></i>Clientes</div>
+      <div class="kpi-val">25</div>
+      <div class="kpi-delta nt">$27M deuda</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--rd)">
+      <div class="kpi-icon"><i class="ti ti-clock"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-clock" style="color:var(--rd)"></i>A cobrar</div>
+      <div class="kpi-val" style="font-size:18px;color:var(--rd)">$68M</div>
+      <div class="kpi-delta dn">Pendiente</div>
+    </div>
+  </div>
+
+  <!-- ALERTA IoT -->
+  <div class="alert alert-am">
+    <i class="ti ti-alert-triangle" style="font-size:20px"></i>
+    <div><strong>Alerta IoT activa</strong><br>Humedad Sensor 1 en 44.2% — bajo umbral mínimo de 45%. Verificar ventilación del galpón.</div>
+  </div>
+
+  <!-- GRAFICA PRODUCCION -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title"><i class="ti ti-chart-bar"></i>Producción últimos 7 días</span>
+      <span class="bdg bbl">Lohmann Brown</span>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+      <div class="mini-chart" id="miniChart"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:10px;color:var(--gy)">22/05</span>
+        <span style="font-size:10px;color:var(--gy)">28/05</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAFICA POSTURA VS TABLA -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title"><i class="ti ti-chart-line"></i>Postura real vs tabla genética</span>
+      <span class="bdg bgn"><i class="ti ti-arrow-up-right"></i>+21.2 AA</span>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+      <div class="chart-wrap"><canvas id="chartTabla"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ESTADO SENSORES IoT RAPIDO -->
+  <div class="sec-title"><i class="ti ti-cpu" style="font-size:14px"></i>Estado IoT — Sensores galpón</div>
+  <div class="card">
+    <div class="card-body" style="padding:0 14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gl)">
+        <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+          <i class="ti ti-thermometer" style="color:var(--gn);font-size:18px"></i>Temperatura 1
+        </span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:15px;font-weight:800">28.0°C</span>
+          <span class="bdg bgn"><i class="ti ti-check" style="font-size:10px"></i>Normal</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gl)">
+        <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+          <i class="ti ti-droplet" style="color:var(--rd);font-size:18px"></i>Humedad 1
+        </span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:15px;font-weight:800;color:var(--rd)">44.2%</span>
+          <span class="bdg bam"><i class="ti ti-alert-triangle" style="font-size:10px"></i>Atención</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gl)">
+        <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+          <i class="ti ti-wind" style="color:var(--gn);font-size:18px"></i>Calidad Aire
+        </span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:15px;font-weight:800">205 ppm</span>
+          <span class="bdg bgn"><i class="ti ti-check" style="font-size:10px"></i>Normal</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
+        <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+          <i class="ti ti-droplets" style="color:var(--gn);font-size:18px"></i>Flujo Agua
+        </span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:15px;font-weight:800">55 L</span>
+          <span class="bdg bgn"><i class="ti ti-check" style="font-size:10px"></i>Normal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIABILIDAD -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title"><i class="ti ti-heart-rate-monitor"></i>Viabilidad del lote</span>
+      <span class="bdg bgy">Sem. 89</span>
+    </div>
+    <div class="card-body">
+      <div class="viab-bar">
+        <div class="viab-row">
+          <span style="display:flex;align-items:center;gap:5px">
+            <i class="ti ti-circle-filled" style="color:var(--am);font-size:10px"></i>Brown-Classic
+          </span>
+          <span class="viab-val" style="color:var(--am)">90.2% <small style="color:var(--gy);font-weight:400">(tab: 93.1%)</small></span>
+        </div>
+        <div class="pb-bg"><div class="pb-fill" id="viab1" style="width:0%;background:linear-gradient(90deg,var(--am),#F39C12)"></div></div>
+      </div>
+      <div class="viab-bar">
+        <div class="viab-row">
+          <span style="display:flex;align-items:center;gap:5px">
+            <i class="ti ti-circle-filled" style="color:var(--rd);font-size:10px"></i>LSL-Classic
+          </span>
+          <span class="viab-val" style="color:var(--rd)">67.3% <small style="color:var(--gy);font-weight:400">(tab: 93.6%)</small></span>
+        </div>
+        <div class="pb-bg"><div class="pb-fill" id="viab2" style="width:0%;background:linear-gradient(90deg,var(--rd),#E74C3C)"></div></div>
+      </div>
+      <div class="alert alert-rd" style="margin:12px 0 0">
+        <i class="ti ti-alert-circle"></i>
+        <span>LSL-Classic con <strong>-26.3pp</strong> vs tabla. Requiere atención veterinaria urgente.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ULTIMOS REGISTROS DE PRODUCCION -->
+  <div class="sec-title"><i class="ti ti-history" style="font-size:14px"></i>Últimos registros</div>
+  <div class="card">
+    <div class="card-body" style="padding:0 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;
+        padding:10px 0;border-bottom:1px solid var(--gl)">
+        <div>
+          <div style="font-size:13px;font-weight:700">28/05 · Sem. 89</div>
+          <div style="font-size:11px;color:var(--gy);margin-top:2px">🥚 2.940 · 📦 98 caj. · 💀 2 muertas</div>
+        </div>
+        <span style="font-size:14px;font-weight:800;color:var(--gn)">84.3% <small style="font-size:10px;color:var(--gn)">+2.8pp</small></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;
+        padding:10px 0;border-bottom:1px solid var(--gl)">
+        <div>
+          <div style="font-size:13px;font-weight:700">27/05 · Sem. 89</div>
+          <div style="font-size:11px;color:var(--gy);margin-top:2px">🥚 2.820 · 📦 94 caj. · 💀 6 muertas</div>
+        </div>
+        <span style="font-size:14px;font-weight:800;color:var(--am)">80.8% <small style="font-size:10px;color:var(--am)">-0.7pp</small></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;
+        padding:10px 0;border-bottom:1px solid var(--gl)">
+        <div>
+          <div style="font-size:13px;font-weight:700">26/05 · Sem. 89</div>
+          <div style="font-size:11px;color:var(--gy);margin-top:2px">🥚 3.000 · 📦 100 caj. · 💀 3 muertas</div>
+        </div>
+        <span style="font-size:14px;font-weight:800;color:var(--gn)">85.8% <small style="font-size:10px;color:var(--gn)">+4.3pp</small></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+        <div>
+          <div style="font-size:13px;font-weight:700">25/05 · Sem. 88</div>
+          <div style="font-size:11px;color:var(--gy);margin-top:2px">🥚 2.550 · 📦 85 caj. · 💀 7 muertas</div>
+        </div>
+        <span style="font-size:14px;font-weight:800;color:var(--rd)">72.9% <small style="font-size:10px;color:var(--rd)">-9.1pp</small></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN COMERCIAL -->
+  <div class="sec-title"><i class="ti ti-building-store" style="font-size:14px"></i>Resumen comercial</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--gl)">
+        <div style="padding:14px;text-align:center;border-right:1px solid var(--gl)">
+          <div style="font-size:20px;font-weight:800;color:var(--gn)">$254M</div>
+          <div style="font-size:10px;color:var(--gy);margin-top:3px;font-weight:600">Total ventas</div>
+        </div>
+        <div style="padding:14px;text-align:center;border-right:1px solid var(--gl)">
+          <div style="font-size:20px;font-weight:800;color:var(--gn)">$186M</div>
+          <div style="font-size:10px;color:var(--gy);margin-top:3px;font-weight:600">Cobrado</div>
+        </div>
+        <div style="padding:14px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--rd)">$68M</div>
+          <div style="font-size:10px;color:var(--gy);margin-top:3px;font-weight:600">A cobrar</div>
+        </div>
+      </div>
+      <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--gy)">551 ventas · 25 clientes · 25 productos</span>
+        <span class="bdg bgn"><i class="ti ti-trending-up" style="font-size:10px"></i>Activo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN DE IMPLEMENTACION -->
+  <div class="sec-title"><i class="ti ti-map-2" style="font-size:14px"></i>Plan de implementación</div>
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title"><i class="ti ti-list-check"></i>Progreso por fase</span>
+      <button class="btn btn-sm" onclick="openModal('modalPlan')" id="btnEditPlan">
+        <i class="ti ti-edit"></i>Editar
+      </button>
+    </div>
+    <div class="card-body" id="planBody">
+      <!-- se renderiza por JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PRODUCCION ══ -->
+<div class="sec" id="sec-prod">
+  <div class="sec-title"><i class="ti ti-pencil" style="font-size:14px"></i>Registro de hoy</div>
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title"><i class="ti ti-clipboard-list"></i>Carga diaria</span>
+      <span class="bdg bbl">G1 · Lote F1 · Sem 89</span>
+    </div>
+    <div class="card-body">
+      <div class="frow">
+        <div class="fg"><label>📅 Fecha</label><input type="date" id="rFecha"></div>
+        <div class="fg"><label>🔢 Sem. edad</label><input type="number" id="rSem" value="89" inputmode="numeric"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>🥚 Huevos totales</label><input type="number" id="rHuevos" value="2940" inputmode="numeric" oninput="calcPost()"></div>
+        <div class="fg"><label>🐔 Aves existencia</label><input type="number" id="rExist" value="3520" inputmode="numeric" oninput="calcPost()"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>📦 Cajones (×360)</label><input type="number" id="rCaj" value="98" inputmode="numeric"></div>
+        <div class="fg"><label>🧺 Maples (×30)</label><input type="number" id="rMap" value="0" inputmode="numeric"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>💀 Aves muertas</label><input type="number" id="rMuertas" value="2" inputmode="numeric" oninput="checkMort()"></div>
+        <div class="fg"><label>📊 % Postura (auto)</label><div class="computed" id="postCalc">83.52%</div></div>
+      </div>
+      <div class="fg" style="margin-bottom:14px">
+        <label>📝 Observaciones</label>
+        <input type="text" id="rObs" placeholder="Sin novedades...">
+      </div>
+      <div id="mortAlert" style="display:none" class="alert alert-rd">
+        <i class="ti ti-alert-circle"></i><span id="mortAlertMsg"></span>
+      </div>
+      <button class="btn btn-p btn-full" onclick="guardarReg()" style="height:48px;font-size:15px">
+        <i class="ti ti-device-floppy" style="font-size:19px"></i>Guardar registro
+      </button>
+    </div>
+  </div>
+
+  <div class="sec-title"><i class="ti ti-history" style="font-size:14px"></i>Últimos 7 registros</div>
+  <div id="prodLog"></div>
+</div>
+
+<!-- ══ IOT ══ -->
+<div class="sec" id="sec-iot">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:11px;color:var(--gy);font-weight:600">
+      <i class="ti ti-clock" style="font-size:13px"></i> Act.: <strong id="iotTs">--:--</strong>
+    </span>
+    <span style="font-size:11px;color:var(--gn);font-weight:700;display:flex;align-items:center;gap:5px">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--gn);display:inline-block;animation:pulse 1.5s infinite"></span>
+      6 sensores online
+    </span>
+  </div>
+  <div class="s-grid" id="sGrid"></div>
+  <div class="card">
+    <div class="card-hdr"><span class="card-title"><i class="ti ti-thermometer"></i>Temperatura — últimas 6hs</span></div>
+    <div class="card-body" style="padding-bottom:8px"><div class="chart-wrap"><canvas id="chartT"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><span class="card-title"><i class="ti ti-droplet"></i>Humedad — últimas 6hs</span></div>
+    <div class="card-body" style="padding-bottom:8px"><div class="chart-wrap"><canvas id="chartH"></canvas></div></div>
+  </div>
+  <div class="sec-title"><i class="ti ti-bell" style="font-size:14px"></i>Alertas del día</div>
+  <div class="card"><div class="card-body" style="padding:0 14px">
+    <div class="hrow"><div class="hrow-l"><span class="hrow-date"><i class="ti ti-clock" style="font-size:11px"></i> 10:42 · Humedad 1</span><span class="hrow-main">Humedad en 44.2% — bajo mínimo</span></div><span class="bdg bam"><i class="ti ti-alert-triangle"></i>Advertencia</span></div>
+    <div class="hrow"><div class="hrow-l"><span class="hrow-date"><i class="ti ti-clock" style="font-size:11px"></i> 08:27 · Temp. 1</span><span class="hrow-main">Temperatura en 30.0°C — límite crítico</span></div><span class="bdg brd"><i class="ti ti-circle-filled"></i>Crítico</span></div>
+    <div class="hrow"><div class="hrow-l"><span class="hrow-date"><i class="ti ti-clock" style="font-size:11px"></i> 02:21 · Flujo Agua</span><span class="hrow-main">Corte de agua — 0L detectado</span></div><span class="bdg brd"><i class="ti ti-circle-filled"></i>Crítico</span></div>
+    <div class="hrow" style="border:none"><div class="hrow-l"><span class="hrow-date"><i class="ti ti-clock" style="font-size:11px"></i> 04:00 · CO2</span><span class="hrow-main">Calidad del aire óptima — 190ppm</span></div><span class="bdg bgn"><i class="ti ti-check"></i>Normal</span></div>
+  </div></div>
+</div>
+
+<!-- ══ SANIDAD ══ -->
+<div class="sec" id="sec-mort">
+  <div class="kpi2">
+    <div class="kpi-c" style="border-top:3px solid var(--am)">
+      <div class="kpi-icon"><i class="ti ti-trending-down"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-trending-down" style="color:var(--rd)"></i>Mort. semanal</div>
+      <div class="kpi-val" style="color:var(--am)">0.77%</div>
+      <div class="kpi-delta bam">⚠️ Umbral: 0.5%</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--gy)">
+      <div class="kpi-icon"><i class="ti ti-skull"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-skull" style="color:var(--gy)"></i>Muertas hoy</div>
+      <div class="kpi-val">2</div>
+      <div class="kpi-delta nt">Total sem.: 14</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--am)">
+      <div class="kpi-icon"><i class="ti ti-heart"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-heart" style="color:var(--am)"></i>Viabilidad Brown</div>
+      <div class="kpi-val" style="color:var(--am)">90.2%</div>
+      <div class="kpi-delta nt">Tab: 93.1%</div>
+    </div>
+    <div class="kpi-c" style="border-top:3px solid var(--rd)">
+      <div class="kpi-icon"><i class="ti ti-heart-broken"></i></div>
+      <div class="kpi-lbl"><i class="ti ti-heart-broken" style="color:var(--rd)"></i>Viabilidad LSL</div>
+      <div class="kpi-val" style="color:var(--rd)">67.3%</div>
+      <div class="kpi-delta dn"><i class="ti ti-trending-down"></i>-26.3pp</div>
+    </div>
+  </div>
+  <div class="alert alert-am">
+    <i class="ti ti-alert-triangle"></i>
+    <span>Mortalidad semanal en <strong>0.77%</strong> — supera umbral. Revisar causa y contactar veterinario.</span>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><span class="card-title"><i class="ti ti-chart-area"></i>Mortalidad semanal — historial</span><span class="bdg bam">Sem 76-89</span></div>
+    <div class="card-body" style="padding-bottom:8px"><div class="chart-wrap"><canvas id="chartMort"></canvas></div></div>
+  </div>
+  <div class="sec-title"><i class="ti ti-shield" style="font-size:14px"></i>Protocolo de alertas</div>
+  <div class="card"><div class="card-body" style="padding:0 14px">
+    <div class="hrow"><div class="hrow-l"><span class="hrow-main" style="color:var(--gn)">✅ Normal</span><span class="hrow-date">Mortalidad semanal ≤ 0.5%</span></div><span style="font-size:12px;color:var(--gy);font-weight:600">Sin acción</span></div>
+    <div class="hrow"><div class="hrow-l"><span class="hrow-main" style="color:var(--am)">⚠️ Advertencia</span><span class="hrow-date">Mortalidad semanal > 0.5%</span></div><span style="font-size:12px;color:var(--gy);font-weight:600">Revisar causa</span></div>
+    <div class="hrow" style="border:none"><div class="hrow-l"><span class="hrow-main" style="color:var(--rd)">🔴 Crítico</span><span class="hrow-date">Mortalidad semanal > 1.0%</span></div><span style="font-size:12px;color:var(--gy);font-weight:600">Llamar vet.</span></div>
+  </div></div>
+</div>
+
+<!-- ══ VENTAS ══ -->
+<div class="sec" id="sec-ventas">
+  <div class="alert alert-bl" style="margin-bottom:10px">
+    <i class="ti ti-info-circle"></i>
+    <span>Módulo integrado con <strong>Don Gestión</strong> — datos comerciales reales en tiempo real.</span>
+  </div>
+  <div class="dg-nav">
+    <button class="btn btn-sm dg-btn active-dg" onclick="setIframe('https://avicola-tilcor.dongestion.com/sells','dg-v')"><i class="ti ti-shopping-cart"></i>Ventas</button>
+    <button class="btn btn-sm dg-btn" onclick="setIframe('https://avicola-tilcor.dongestion.com/contacts?type=customer','dg-c')"><i class="ti ti-users"></i>Clientes</button>
+    <button class="btn btn-sm dg-btn" onclick="setIframe('https://avicola-tilcor.dongestion.com/account/cash-flow','dg-cc')"><i class="ti ti-arrows-exchange"></i>Cuentas</button>
+    <button class="btn btn-sm dg-btn" onclick="setIframe('https://avicola-tilcor.dongestion.com/products','dg-p')"><i class="ti ti-box"></i>Productos</button>
+    <button class="btn btn-sm dg-btn" onclick="setIframe('https://avicola-tilcor.dongestion.com/reports','dg-i')"><i class="ti ti-chart-bar"></i>Informes</button>
+    <button class="btn btn-sm" onclick="window.open('https://avicola-tilcor.dongestion.com','_blank')" style="flex-shrink:0"><i class="ti ti-external-link"></i></button>
+  </div>
+  <div style="background:var(--wh);border-radius:var(--r);overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);position:relative">
+    <div id="iframeLoader" style="position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;background:var(--gl);z-index:10;gap:14px">
+      <div style="width:38px;height:38px;border:3px solid var(--gm);border-top-color:var(--bd);
+        border-radius:50%;animation:spin 1s linear infinite"></div>
+      <span style="font-size:13px;color:var(--gy);font-weight:600">Cargando Don Gestión...</span>
+    </div>
+    <iframe id="dgFrame" src="https://avicola-tilcor.dongestion.com/sells"
+      style="width:100%;height:calc(100vh - 210px);border:none;display:block;min-height:480px"
+      onload="hideLoader()" allow="same-origin" title="Don Gestión TILCOR"></iframe>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- ── TAB BAR ── -->
+<div id="tabbar">
+  <button class="tab active" onclick="nav('dash',this)" id="tab-dash">
+    <div class="tab-indicator"></div>
+    <i class="ti ti-layout-dashboard"></i>Inicio
+  </button>
+  <button class="tab" onclick="nav('prod',this)" id="tab-prod">
+    <div class="tab-indicator"></div>
+    <i class="ti ti-egg"></i>Producción
+  </button>
+  <button class="tab" onclick="nav('iot',this)" id="tab-iot">
+    <div class="tab-indicator"></div>
+    <i class="ti ti-cpu"></i>IoT
+  </button>
+  <button class="tab" onclick="nav('mort',this)" id="tab-mort">
+    <div class="tab-indicator"></div>
+    <i class="ti ti-heart-rate-monitor"></i>Sanidad
+  </button>
+  <button class="tab" onclick="nav('ventas',this)" id="tab-ventas">
+    <div class="tab-indicator"></div>
+    <i class="ti ti-building-store"></i>Ventas
+  </button>
+</div>
+
+<!-- ── MODAL PLAN ── -->
+<div class="modal-bg" id="modalPlan">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span><i class="ti ti-edit" style="color:var(--bd)"></i> Editar progreso</span>
+      <button onclick="closeModal('modalPlan')" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gy)"><i class="ti ti-x"></i></button>
+    </div>
+    <p style="font-size:12px;color:var(--gy);margin-bottom:16px;line-height:1.5">
+      Mové cada slider para actualizar el progreso de cada fase. Se guarda automáticamente.
+    </p>
+    <div id="planSliders" style="display:flex;flex-direction:column;gap:18px"></div>
+    <button class="btn btn-p btn-full" style="margin-top:20px;height:46px" onclick="guardarPlan()">
+      <i class="ti ti-device-floppy"></i>Guardar cambios
+    </button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ── MODAL ── -->
+<div class="modal-bg" id="modalConfirm">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span id="modalTitle">Confirmar</span>
+      <button onclick="closeModal('modalConfirm')" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gy)"><i class="ti ti-x"></i></button>
+    </div>
+    <p id="modalMsg" style="color:var(--gy);font-size:14px;margin-bottom:20px;line-height:1.6"></p>
+    <button class="btn btn-gn btn-full" style="height:48px;font-size:15px;margin-bottom:10px" onclick="confirmAction()"><i class="ti ti-check"></i>Confirmar</button>
+    <button class="btn btn-full" style="height:44px" onclick="closeModal('modalConfirm')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ── LOGIN ── -->
+<div id="loginScreen">
+  <div style="text-align:center;margin-bottom:32px;animation:fadeUp .5s ease">
+    <div style="width:88px;height:88px;background:rgba(255,255,255,.12);border-radius:24px;
+      display:flex;align-items:center;justify-content:center;font-size:48px;
+      margin:0 auto 16px;border:2px solid rgba(255,255,255,.2);
+      box-shadow:0 8px 32px rgba(0,0,0,.2)">🐔</div>
+    <div style="font-size:32px;font-weight:900;color:#fff;letter-spacing:-1px">TILCOR</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:5px">Sistema Avícola Integral · Córdoba</div>
+  </div>
+
+  <div class="login-card" style="animation:scaleIn .4s ease .1s both">
+    <div style="font-size:18px;font-weight:800;color:var(--bk);margin-bottom:20px;text-align:center">
+      Iniciar sesión
+    </div>
+    <div class="login-input-wrap">
+      <label><i class="ti ti-user" style="font-size:12px"></i> Usuario</label>
+      <input type="text" id="loginUser" placeholder="Ingresá tu usuario"
+        style="background:var(--gl)"
+        onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+    </div>
+    <div class="login-input-wrap">
+      <label><i class="ti ti-lock" style="font-size:12px"></i> Contraseña</label>
+      <div style="position:relative">
+        <input type="password" id="loginPass" placeholder="Ingresá tu contraseña"
+          style="background:var(--gl);padding-right:44px"
+          onkeydown="if(event.key==='Enter')doLogin()">
+        <button onclick="togglePass()" id="eyeBtn"
+          style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+            background:none;border:none;cursor:pointer;color:var(--gy);font-size:19px;
+            transition:color .2s">
+          <i class="ti ti-eye"></i>
+        </button>
+      </div>
+    </div>
+    <div id="loginError">
+      <i class="ti ti-alert-circle"></i>
+      <span>Usuario o contraseña incorrectos</span>
+    </div>
+    <button onclick="doLogin()"
+      style="width:100%;padding:14px;background:linear-gradient(135deg,var(--bd),var(--bm));
+        color:var(--wh);border:none;border-radius:12px;font-size:16px;font-weight:800;
+        cursor:pointer;letter-spacing:-.2px;
+        box-shadow:0 6px 20px rgba(26,82,118,.4);transition:all .2s"
+      onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 24px rgba(26,82,118,.5)'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 6px 20px rgba(26,82,118,.4)'"
+      onmousedown="this.style.transform='scale(.98)'">
+      <i class="ti ti-login" style="margin-right:8px"></i>Ingresar
+    </button>
+  </div>
+  <div style="margin-top:24px;font-size:11px;color:rgba(255,255,255,.3);text-align:center">
+    TILCOR S.A.S. · CUIT 30-71864712-2 · Colonia Tirolesa, Córdoba
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+// ── DATOS ────────────────────────────────────────────────────────────────────
+const PROD_DATA=[
+  {fecha:"22/05",sem:88,h:2940,caj:98,m:3,ex:3508,pos:83.81,tab:82.0},
+  {fecha:"23/05",sem:88,h:2880,caj:96,m:1,ex:3507,pos:82.12,tab:82.0},
+  {fecha:"24/05",sem:88,h:2940,caj:98,m:0,ex:3507,pos:83.82,tab:82.0},
+  {fecha:"25/05",sem:88,h:2550,caj:85,m:7,ex:3500,pos:72.85,tab:82.0},
+  {fecha:"26/05",sem:89,h:3000,caj:100,m:3,ex:3497,pos:85.78,tab:81.5},
+  {fecha:"27/05",sem:89,h:2820,caj:94,m:6,ex:3491,pos:80.78,tab:81.5},
+  {fecha:"28/05",sem:89,h:2940,caj:98,m:2,ex:3489,pos:84.27,tab:81.5},
+];
+const SENSORS=[
+  {id:"t1",name:"Temp. 1",ico:"ti-thermometer",val:28.0,unit:"°C",min:15,max:30},
+  {id:"t2",name:"Temp. 2",ico:"ti-thermometer",val:25.1,unit:"°C",min:15,max:30},
+  {id:"h1",name:"Humedad 1",ico:"ti-droplet",val:44.2,unit:"%",min:45,max:75},
+  {id:"h2",name:"Humedad 2",ico:"ti-droplet",val:72.7,unit:"%",min:45,max:75},
+  {id:"co2",name:"Calidad Aire",ico:"ti-wind",val:205.0,unit:"ppm",min:0,max:3000},
+  {id:"fa",name:"Flujo Agua",ico:"ti-droplets",val:55.0,unit:"L",min:5,max:200},
+];
+const SUBTITLES={
+  dash:"Sistema Avícola · Galpón 1",
+  prod:"Registro de producción diaria",
+  iot:"Monitoreo ambiental en tiempo real",
+  mort:"Control de mortalidad y viabilidad",
+  ventas:"Gestión comercial · Don Gestión"
+};
+const USUARIOS={
+  "Admin":{pass:"Tilcor2026",rol:"admin",nombre:"Administrador"},
+  "Usuario":{pass:"Usuario",rol:"empleado",nombre:"Empleado"},
+};
+let rolActual=null,pendingAction=null;
+const $=id=>document.getElementById(id);
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg,type='ok'){
+  const t=$('toast'),i=$('toastIcon'),s=$('toastMsg');
+  i.className=type==='ok'?'ti ti-check':'ti ti-alert-circle';
+  t.className='toast '+type;s.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+function openModal(id){$(id).classList.add('open')}
+function closeModal(id){$(id).classList.remove('open')}
+function confirmAction(){closeModal('modalConfirm');if(pendingAction)pendingAction()}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function nav(sec,el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  $('sec-'+sec).classList.add('active');
+  el.classList.add('active');
+  $('topSub').textContent=SUBTITLES[sec]||'TILCOR';
+  $('content').scrollTop=0;
+  // Animar barras de viabilidad al entrar al dashboard
+  if(sec==='dash'){
+    setTimeout(()=>{
+      $('viab1').style.width='90.2%';
+      $('viab2').style.width='67.3%';
+    },200);
+  }
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function tick(){
+  const ts=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  const el=$('iotTs');if(el)el.textContent=ts;
+}
+setInterval(tick,10000);tick();
+
+// ── PRODUCCION ────────────────────────────────────────────────────────────────
+function calcPost(){
+  const h=parseInt($('rHuevos').value)||0;
+  const e=parseInt($('rExist').value)||1;
+  const p=(h/e*100).toFixed(2);
+  const el=$('postCalc');
+  el.textContent=p+'%';
+  if(p>=80){el.style.color='var(--gn)';el.style.borderColor='var(--gn)'}
+  else if(p>=75){el.style.color='var(--am)';el.style.borderColor='#F39C12'}
+  else{el.style.color='var(--rd)';el.style.borderColor='var(--rd)'}
+}
+function checkMort(){
+  const m=parseInt($('rMuertas').value)||0;
+  const alertEl=$('mortAlert');
+  if(m>17){
+    alertEl.style.display='flex';
+    $('mortAlertMsg').textContent=`${m} muertas — mortalidad estimada supera umbral. Revisar lote.`;
+  } else alertEl.style.display='none';
+}
+function guardarReg(){
+  const h=parseInt($('rHuevos').value)||0;
+  const e=parseInt($('rExist').value)||0;
+  const m=parseInt($('rMuertas').value)||0;
+  if(!h||!e){toast('Completá huevos y existencia','err');return}
+  const pos=e>0?(h/e*100).toFixed(2):0;
+  const fecha=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'});
+  PROD_DATA.push({fecha,sem:parseInt($('rSem').value)||89,
+    h,caj:parseInt($('rCaj').value)||0,m,ex:e,pos:parseFloat(pos),tab:81.5});
+  renderProdLog();renderMiniChart();
+  if(parseFloat(pos)<77){
+    pendingAction=()=>toast('✅ Alerta enviada al supervisor');
+    $('modalTitle').textContent='⚠️ Alerta de producción';
+    $('modalMsg').textContent=`El % de postura (${pos}%) está más de 5pp bajo la tabla genética. ¿Notificamos al supervisor?`;
+    openModal('modalConfirm');
+  } else {
+    toast('✅ Registro guardado correctamente');
+  }
+  $('rObs').value='';
+}
+function renderProdLog(){
+  $('prodLog').innerHTML=PROD_DATA.slice().reverse().slice(0,7).map((r,i)=>{
+    const dev=(r.pos-r.tab).toFixed(2);
+    const dc=dev>=0?'var(--gn)':dev<-5?'var(--rd)':'var(--am)';
+    return `<div class="prod-row" style="animation-delay:${i*.06}s">
+      <div class="prod-row-hdr">
+        <span class="prod-row-date">📅 ${r.fecha} · Sem. ${r.sem}</span>
+        <span class="prod-row-pct" style="color:${dc}">${r.pos.toFixed(2)}% <small style="color:var(--gy);font-weight:400">(${dev>=0?'+':''}${dev}pp)</small></span>
+      </div>
+      <div class="prod-row-details">
+        <span class="prod-detail">🥚 <span>${r.h.toLocaleString()}</span></span>
+        <span class="prod-detail">📦 <span>${r.caj} caj.</span></span>
+        <span class="prod-detail">💀 <span>${r.m}</span></span>
+        <span class="prod-detail">🐔 <span>${r.ex.toLocaleString()}</span></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MINI CHART ────────────────────────────────────────────────────────────────
+function renderMiniChart(){
+  const data=PROD_DATA.slice(-7);
+  const max=Math.max(...data.map(d=>d.h));
+  $('miniChart').innerHTML=data.map((d,i)=>{
+    const pct=Math.max(8,Math.round(d.h/max*100));
+    const hi=i===data.length-1;
+    const clr=hi?'var(--bd)':d.pos<d.tab?'var(--am)':'var(--bm)';
+    return `<div class="mini-bar" style="height:0%;background:${clr};opacity:${hi?1:.7}"
+      data-h="${pct}"></div>`;
+  }).join('');
+  // Animar barras
+  setTimeout(()=>{
+    document.querySelectorAll('.mini-bar').forEach(b=>{
+      b.style.height=b.dataset.h+'%';
+    });
+  },100);
+}
+
+// ── SENSORS ───────────────────────────────────────────────────────────────────
+function sNivel(s){
+  if(s.val<s.min*.9||s.val>s.max*1.1)return'crit';
+  if(s.val<s.min||s.val>s.max)return'warn';
+  return'ok';
+}
+function renderSensors(){
+  const lbl={ok:'Normal',warn:'Atención',crit:'CRÍTICO'};
+  const bc={ok:'bgn',warn:'bam',crit:'brd'};
+  const ic={ok:'ti-check',warn:'ti-alert-triangle',crit:'ti-alert-octagon'};
+  $('sGrid').innerHTML=SENSORS.map(s=>{
+    const n=sNivel(s);
+    return `<div class="s-card ${n}">
+      <div class="s-dot"></div>
+      <div class="s-name">${s.name}</div>
+      <div class="s-val">${s.val.toFixed(s.id==='co2'?0:1)}<span class="s-unit">${s.unit}</span></div>
+      <div style="margin-top:8px"><span class="bdg ${bc[n]}"><i class="ti ${ic[n]}" style="font-size:10px"></i>${lbl[n]}</span></div>
+      <i class="ti ${s.ico} s-icon"></i>
+    </div>`;
+  }).join('');
+  tick();
+}
+function simSensors(){
+  SENSORS.forEach(s=>{s.val=Math.max(s.min*.75,Math.min(s.max*1.1,s.val+(Math.random()-.5)*.6));});
+  renderSensors();
+}
+
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif';
+const cB={responsive:true,maintainAspectRatio:false,animation:{duration:800,easing:'easeInOutQuart'},
+  plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:8,padding:10,usePointStyle:true}}},
+  scales:{x:{ticks:{font:{size:10}},grid:{color:'rgba(0,0,0,0.03)'}},
+          y:{ticks:{font:{size:10}},grid:{color:'rgba(0,0,0,0.04)'}}}};
+
+const sem=[83,84,85,86,87,88,89];
+new Chart($('chartTabla'),{type:'line',data:{
+  labels:sem.map(s=>'S'+s),
+  datasets:[
+    {label:'Real',data:[86.2,85.8,85.1,84.6,83.9,83.5,83.5],
+      borderColor:'#1E8449',backgroundColor:'rgba(30,132,73,0.1)',
+      tension:.4,fill:true,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#1E8449'},
+    {label:'Tabla',data:[85.0,84.5,84.0,83.5,83.0,82.5,82.0],
+      borderColor:'#E74C3C',borderDash:[5,5],tension:.4,fill:false,
+      borderWidth:1.5,pointRadius:0}
+  ]},options:cB});
+
+const hs=['06h','07h','08h','09h','10h','11h'];
+new Chart($('chartT'),{type:'line',data:{labels:hs,datasets:[
+  {label:'Sensor 1',data:[23.1,25.4,28.6,29.2,28.0,28.0],
+    borderColor:'#E74C3C',backgroundColor:'rgba(231,76,60,0.08)',
+    tension:.4,fill:true,borderWidth:2,pointRadius:3},
+  {label:'Sensor 2',data:[24.3,25.8,26.9,27.2,26.5,25.1],
+    borderColor:'#2980B9',backgroundColor:'rgba(41,128,185,0.06)',
+    tension:.4,fill:true,borderWidth:2,pointRadius:3}
+]},options:{...cB,scales:{...cB.scales,y:{...cB.scales.y,min:20,max:32}}}});
+
+new Chart($('chartH'),{type:'line',data:{labels:hs,datasets:[
+  {label:'Sensor 1',data:[60.1,57.8,54.2,50.1,47.5,44.2],
+    borderColor:'#E74C3C',backgroundColor:'rgba(231,76,60,0.08)',
+    tension:.4,fill:true,borderWidth:2,pointRadius:3},
+  {label:'Sensor 2',data:[59.5,58.0,55.6,52.3,68.4,72.7],
+    borderColor:'#2980B9',backgroundColor:'rgba(41,128,185,0.06)',
+    tension:.4,fill:true,borderWidth:2,pointRadius:3}
+]},options:{...cB,scales:{...cB.scales,y:{...cB.scales.y,min:35,max:80}}}});
+
+const semM=[76,77,78,79,80,81,82,83,84,85,86,87,88,89];
+new Chart($('chartMort'),{type:'line',data:{
+  labels:semM.map(s=>'S'+s),
+  datasets:[{label:'% Mortalidad',
+    data:[0.18,0.22,0.31,0.28,0.41,0.38,0.45,0.52,0.48,0.61,0.73,0.55,0.77,0.19],
+    borderColor:'#922B21',backgroundColor:'rgba(146,43,33,0.1)',
+    tension:.4,fill:true,borderWidth:2.5,pointRadius:2}]
+},options:{...cB,scales:{...cB.scales,y:{
+  ...cB.scales.y,ticks:{callback:v=>v+'%',font:{size:10}},suggestedMax:1.5}}}});
+
+// ── IFRAME ────────────────────────────────────────────────────────────────────
+function setIframe(url,btnId){
+  $('iframeLoader').style.display='flex';
+  $('dgFrame').src=url;
+  document.querySelectorAll('.dg-btn').forEach(b=>b.classList.remove('active-dg'));
+  if(btnId){
+    const btn=document.querySelector(`[onclick*="${btnId}"]`);
+    if(btn)btn.classList.add('active-dg');
+  }
+}
+function hideLoader(){const l=$('iframeLoader');if(l)l.style.display='none'}
+
+// ── USER MENU ─────────────────────────────────────────────────────────────────
+function toggleUserMenu(){
+  const m=$('userMenu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',function(e){
+  const m=$('userMenu'),a=$('userAvatar');
+  if(m&&!m.contains(e.target)&&a&&!a.contains(e.target))m.style.display='none';
+});
+function cerrarSesion(){
+  sessionStorage.clear();
+  $('userMenu').style.display='none';
+  $('loginUser').value='';
+  $('loginPass').value='';
+  $('loginError').style.display='none';
+  $('loginScreen').style.display='flex';
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function togglePass(){
+  const inp=$('loginPass'),btn=$('eyeBtn');
+  inp.type=inp.type==='password'?'text':'password';
+  btn.innerHTML=inp.type==='text'?'<i class="ti ti-eye-off"></i>':'<i class="ti ti-eye"></i>';
+}
+function doLogin(){
+  const user=$('loginUser').value.trim();
+  const pass=$('loginPass').value;
+  const errEl=$('loginError');
+  const u=USUARIOS[user];
+  if(u&&u.pass===pass){
+    errEl.style.display='none';
+    rolActual=u.rol;
+    sessionStorage.setItem('tilcor_user',user);
+    sessionStorage.setItem('tilcor_rol',u.rol);
+    sessionStorage.setItem('tilcor_nombre',u.nombre);
+    aplicarRol(u.rol,u.nombre);
+    $('loginScreen').style.display='none';
+    toast('Bienvenido, '+u.nombre+' 👋');
+    // Animar barras de viabilidad
+    setTimeout(()=>{$('viab1').style.width='90.2%';$('viab2').style.width='67.3%'},600);
+  } else {
+    errEl.style.display='flex';
+    $('loginPass').value='';
+    $('loginPass').focus();
+    $('loginScreen').querySelector('.login-card').style.animation='shake .35s ease';
+    setTimeout(()=>{$('loginScreen').querySelector('.login-card').style.animation=''},400);
+  }
+}
+function aplicarRol(rol,nombre){
+  const av=$('userAvatar');if(av)av.textContent=nombre[0];
+  const mn=$('userMenuNombre');if(mn)mn.textContent=nombre;
+  const mr=$('userMenuRol');if(mr)mr.textContent=rol==='admin'?'Administrador — Acceso completo':'Empleado — Acceso estándar';
+  const tv=$('tab-ventas'),sv=$('sec-ventas');
+  if(rol==='empleado'){if(tv)tv.style.display='none';if(sv)sv.style.display='none';}
+  else{if(tv)tv.style.display='';if(sv)sv.style.display='';}
+}
+(function checkSession(){
+  const user=sessionStorage.getItem('tilcor_user');
+  const rol=sessionStorage.getItem('tilcor_rol');
+  const nombre=sessionStorage.getItem('tilcor_nombre');
+  if(user&&rol){rolActual=rol;aplicarRol(rol,nombre);$('loginScreen').style.display='none';
+    setTimeout(()=>{$('viab1').style.width='90.2%';$('viab2').style.width='67.3%'},400);}
+})();
+
+// ── PLAN DE IMPLEMENTACION ────────────────────────────────────────────────────
+const FASES_DEFAULT=[
+  {n:1,nombre:"Infraestructura y base de datos",sem:"Sem. 1-4",pct:100},
+  {n:2,nombre:"Núcleo productivo",sem:"Sem. 5-10",pct:100},
+  {n:3,nombre:"Clientes y facturación",sem:"Sem. 11-16",pct:65},
+  {n:4,nombre:"Integración IoT",sem:"Sem. 17-21",pct:0},
+  {n:5,nombre:"Reportes y cierre",sem:"Sem. 22-26",pct:0},
+];
+
+function cargarFases(){
+  try{
+    const saved=localStorage.getItem('tilcor_fases');
+    return saved?JSON.parse(saved):FASES_DEFAULT;
+  }catch(e){return FASES_DEFAULT}
+}
+
+function guardarFasesStorage(fases){
+  try{localStorage.setItem('tilcor_fases',JSON.stringify(fases));}catch(e){}
+}
+
+function renderPlan(){
+  const fases=cargarFases();
+  const body=$('planBody');
+  if(!body)return;
+  body.innerHTML='<div style="display:flex;flex-direction:column;gap:10px">'+
+    fases.map(f=>{
+      const done=f.pct===100;
+      const inprog=f.pct>0&&f.pct<100;
+      const pend=f.pct===0;
+      const bgIcon=done?'var(--gn)':inprog?'var(--bm)':'var(--gm)';
+      const colorSem=done?'var(--gn)':inprog?'var(--bm)':'var(--gy)';
+      const bgBar=done?'var(--gn)':inprog?'var(--bm)':'var(--gy)';
+      const icon=done
+        ?'<i class="ti ti-check" style="color:white;font-size:14px"></i>'
+        :inprog
+          ?'<i class="ti ti-loader" style="color:white;font-size:14px;animation:spin 1.5s linear infinite"></i>'
+          :`<span style="font-size:12px;font-weight:800;color:var(--gy)">${f.n}</span>`;
+      const nameColor=pend?'color:var(--gy)':'';
+      return `<div style="display:flex;align-items:center;gap:10px">
+        <div style="width:28px;height:28px;border-radius:50%;background:${bgIcon};
+          display:flex;align-items:center;justify-content:center;flex-shrink:0;
+          ${inprog?'animation:glow 2s infinite':''}">
+          ${icon}
+        </div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:12px;font-weight:700;${nameColor}">Fase ${f.n} — ${f.nombre}</span>
+            <span style="font-size:11px;font-weight:700;color:${colorSem}">${f.pct}%</span>
+          </div>
+          <div class="pb-bg">
+            <div class="pb-fill" style="width:${f.pct}%;background:${bgBar};
+              transition:width .8s cubic-bezier(.4,0,.2,1)"></div>
+          </div>
+        </div>
+        <span style="font-size:10px;color:${colorSem};font-weight:700;white-space:nowrap">${f.sem}</span>
+      </div>`;
+    }).join('')+'</div>';
+}
+
+function abrirModalPlan(){
+  const fases=cargarFases();
+  $('planSliders').innerHTML=fases.map(f=>`
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:700">Fase ${f.n} — ${f.nombre}</span>
+        <span style="font-size:13px;font-weight:800;color:var(--bd)" id="lbl${f.n}">${f.pct}%</span>
+      </div>
+      <input type="range" min="0" max="100" step="5" value="${f.pct}"
+        id="slider${f.n}"
+        oninput="$('lbl${f.n}').textContent=this.value+'%'"
+        style="width:100%;height:6px;border-radius:3px;outline:none;cursor:pointer;
+          -webkit-appearance:none;appearance:none;
+          background:linear-gradient(to right,var(--bd) 0%,var(--bd) ${f.pct}%,var(--gm) ${f.pct}%,var(--gm) 100%);"
+        oninput="actualizarSlider(${f.n},this)">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gy);margin-top:3px">
+        <span>0%</span><span>${f.sem}</span><span>100%</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function actualizarSlider(n,el){
+  const pct=el.value;
+  $('lbl'+n).textContent=pct+'%';
+  el.style.background=`linear-gradient(to right,var(--bd) 0%,var(--bd) ${pct}%,var(--gm) ${pct}%,var(--gm) 100%)`;
+}
+
+function guardarPlan(){
+  const fases=cargarFases();
+  fases.forEach(f=>{
+    const slider=$('slider'+f.n);
+    if(slider)f.pct=parseInt(slider.value);
+  });
+  guardarFasesStorage(fases);
+  renderPlan();
+  closeModal('modalPlan');
+  toast('✅ Progreso actualizado');
+}
+
+// Sobreescribir openModal para plan
+const _openModal=openModal;
+function openModal(id){
+  if(id==='modalPlan')abrirModalPlan();
+  _openModal(id);
+}
+
+// ── SALUDO DINAMICO ───────────────────────────────────────────────────────────
+function initDashboard(){
+  const now=new Date();
+  const h=now.getHours();
+  const saludo=h<12?'Buenos días 🌅':h<19?'Buenas tardes ☀️':'Buenas noches 🌙';
+  const fecha=now.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
+  const sf=$('dashFecha'),ss=$('dashSaludo');
+  if(sf)sf.textContent=fecha.charAt(0).toUpperCase()+fecha.slice(1);
+  if(ss)ss.textContent=saludo;
+}
+initDashboard();
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+const hoy=new Date().toISOString().split('T')[0];
+document.querySelectorAll('input[type=date]').forEach(i=>{if(!i.value)i.value=hoy});
+renderSensors();renderProdLog();renderMiniChart();renderPlan();
+setInterval(simSensors,3000);
+
+// Service Worker
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW:',e));
+}
+</script>
+</body>
+</html>
