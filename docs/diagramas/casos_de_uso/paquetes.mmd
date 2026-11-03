@@ -1,0 +1,45 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','fontFamily':'Arial','fontSize':'15px','clusterBkg':'#F7FAFC','clusterBorder':'#1A5276'}}}%%
+flowchart LR
+  subgraph EXT1["Campo"]
+    E1["Sensores ESP32"]
+  end
+  subgraph DATOS["Infraestructura"]
+    D2["Broker MQTT<br/>Mosquitto"]
+    D1[("PostgreSQL<br/>+ TimescaleDB")]
+    D3["Celery + Redis<br/>tareas programadas"]
+    D4["Auditoría<br/>(triggers)"]
+  end
+  subgraph API["Aplicación — Django / DRF / Channels"]
+    A1["usuarios<br/>CU15"]
+    A2["produccion<br/>CU01 CU02 CU04 CU09"]
+    A3["sanidad<br/>CU14 CU16 CU17 CU18"]
+    A4["iot<br/>CU03 CU05 CU06 CU07<br/>CU08 CU19-22"]
+    A5["reportes<br/>CU10 CU12 CU13"]
+    A6["comercial<br/>CU11 CU23 CU24"]
+  end
+  subgraph PRES["Presentación — PWA"]
+    P1["Login y roles"]
+    P2["Inicio y dashboard"]
+    P3["Producción"]
+    P4["Monitoreo IoT"]
+    P5["Sanidad"]
+    P6["Ventas"]
+  end
+  subgraph EXT2["Servicios externos"]
+    E2["Don Gestión"]
+    E3["ARCA / AFIP"]
+    E4["Correo, push<br/>y WhatsApp"]
+  end
+  E1 --> D2 --> A4
+  A4 --> D1
+  A1 --> D1
+  A2 --> D1
+  A3 --> D1
+  A6 --> D1
+  D1 --- D4
+  A5 --> D3
+  PRES ==> API
+  A6 --> E2
+  A6 --> E3
+  A4 --> E4
+  D3 --> E4

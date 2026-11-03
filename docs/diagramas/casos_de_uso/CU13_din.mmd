@@ -1,0 +1,19 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  participant C as Celery (22:00)
+  participant BD as PostgreSQL
+  participant PDF as GeneradorPDF
+  participant M as ServicioEmail
+  actor P as Propietario
+  C->>BD: Registros de producción del día
+  BD-->>C: Huevos, cajones, muertas, existencia y postura
+  C->>C: Calcula desvío, mortalidad acumulada y tendencia
+  C->>PDF: Genera el reporte con indicadores, gráficas y alertas
+  PDF-->>C: Archivo PDF
+  C->>M: Envía al correo del propietario
+  M->>P: Correo con reporte adjunto
+  C->>BD: Registra el envío en el log de reportes
+  opt sin registros del día
+    C->>M: Reporte Sin producción registrada, solicita verificar al operario
+  end

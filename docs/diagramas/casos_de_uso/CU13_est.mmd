@@ -1,0 +1,38 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class TareasProgramadas {
+    <<Celery>>
+    +reporte_diario()
+    +informe_semanal()
+  }
+  class RegistroProduccion {
+    +fecha date
+    +semana_edad int
+    +huevos_totales int
+    +cajones int
+    +maples int
+    +aves_muertas int
+    +existencia int
+    +porc_postura() decimal
+    +desvio_vs_tabla() decimal
+    +tiene_alerta_produccion() bool
+  }
+  class GeneradorPDF {
+    +generar(indicadores)
+  }
+  class ServicioEmail {
+    +enviar(destino, adjunto)
+  }
+  class Usuario {
+    +username string
+    +password_hash string
+    +nombre_completo string
+    +rol string
+    +activo bool
+    +ultimo_acceso datetime
+  }
+  TareasProgramadas ..> RegistroProduccion : lee el dia
+  TareasProgramadas ..> GeneradorPDF : reporte
+  TareasProgramadas ..> ServicioEmail : envia
+  ServicioEmail ..> Usuario : propietario

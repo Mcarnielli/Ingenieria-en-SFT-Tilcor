@@ -1,0 +1,27 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor Op as Operario de Galpón
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  Op->>App: Abre la sección Producción
+  App-->>Op: Formulario con fecha, semana, huevos, cajones, maples, muertas y existencia
+  Op->>App: Completa huevos y existencia
+  App-->>Op: Calcula el % de postura en tiempo real
+  Op->>App: Guardar registro
+  alt existencia igual a 0
+    App-->>Op: Error de validación, no guarda
+  else datos válidos
+    App->>API: POST registro de producción
+    API->>BD: Consulta tabla genética (raza, semana)
+    BD-->>API: prod_tabla
+    API->>API: desvio_vs_tabla()
+    alt desvío menor a -5 pp
+      API-->>App: Indicador de alerta
+      App-->>Op: Modal de alerta, ofrece notificar al supervisor
+    end
+    API->>BD: Guarda el registro
+    API-->>App: 201 Creado
+    App-->>Op: Historial de 7 días actualizado
+  end

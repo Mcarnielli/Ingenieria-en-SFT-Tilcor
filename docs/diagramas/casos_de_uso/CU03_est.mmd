@@ -1,0 +1,27 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class Sensor {
+    +codigo string
+    +tipo tipo_sensor
+    +ubicacion string
+    +umbral_min decimal
+    +umbral_max decimal
+    +activo bool
+  }
+  class RegistroSensor {
+    +timestamp datetime
+    +valor decimal
+    +unidad string
+  }
+  class Galpon {
+    +numero int
+    +capacidad_max int
+  }
+  class ConsumidorWebSocket {
+    +connect()
+    +enviar_lectura()
+  }
+  Galpon "1" --> "*" Sensor
+  Sensor "1" --> "*" RegistroSensor
+  ConsumidorWebSocket ..> RegistroSensor : ultimo valor por sensor

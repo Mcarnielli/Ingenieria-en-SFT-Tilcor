@@ -1,0 +1,20 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Operario o Supervisor
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  U->>App: Abre la sección Producción
+  App->>API: GET últimos 7 registros
+  API->>BD: Consulta registros y tabla genética
+  BD-->>API: Registros con prod_tabla
+  API-->>App: Registros con % postura y desvío en pp
+  alt hay registros
+    App-->>U: Historial (verde, naranja o rojo según desvío)
+  else no hay registros
+    App-->>U: Mensaje Sin registros disponibles
+  end
+  opt rol Supervisor
+    App-->>U: Gráfica de postura real vs tabla genética
+  end

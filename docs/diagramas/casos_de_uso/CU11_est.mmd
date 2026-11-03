@@ -1,0 +1,37 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class Cliente {
+    +razon_social string
+    +cuit string
+    +condicion_iva string
+    +categoria string
+    +limite_credito decimal
+  }
+  class Pedido {
+    +fecha datetime
+    +estado string
+    +total decimal
+  }
+  class CuentaCorriente {
+    +tipo_movimiento string
+    +importe decimal
+    +saldo_parcial decimal
+  }
+  class Usuario {
+    +username string
+    +password_hash string
+    +nombre_completo string
+    +rol string
+    +activo bool
+    +ultimo_acceso datetime
+  }
+  class Notificador {
+    +enviar_push()
+    +enviar_whatsapp()
+    +enviar_email()
+  }
+  Cliente "1" --> "*" Pedido
+  Cliente "1" --> "*" CuentaCorriente
+  Pedido ..> Notificador : aprobacion pendiente
+  Notificador ..> Usuario : supervisor

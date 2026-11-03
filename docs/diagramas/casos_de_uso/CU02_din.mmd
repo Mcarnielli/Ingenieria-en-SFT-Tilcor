@@ -1,0 +1,23 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor Op as Operario de Galpón
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  actor Sup as Supervisor
+  Op->>App: Ingresa las aves muertas del día
+  alt muertas mayor a la existencia
+    App-->>Op: Error de validación
+  else valor válido
+    App->>API: POST registro con aves_muertas
+    API->>BD: Actualiza existencia del lote
+    API->>API: Calcula mortalidad semanal acumulada
+    alt mortalidad mayor a 1,0 %
+      API-->>Sup: Alerta Crítico (CU07)
+    else mortalidad mayor a 0,5 %
+      API-->>Sup: Alerta Warning (CU06)
+    end
+    API-->>App: Registro guardado
+    App-->>Op: Confirmación
+  end

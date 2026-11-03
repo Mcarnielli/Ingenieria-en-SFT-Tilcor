@@ -1,0 +1,19 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  participant C as Celery (lunes 08:00)
+  participant BD as PostgreSQL
+  participant PDF as GeneradorPDF
+  participant M as ServicioEmail
+  actor Vet as Veterinario externo
+  C->>BD: Consolida la mortalidad de la semana
+  BD-->>C: Muertas por día y existencia final
+  C->>C: Calcula mortalidad semanal y viabilidad acumulada
+  C->>PDF: Genera el informe con resumen, curva y alertas
+  PDF-->>C: Archivo PDF
+  C->>M: Envía el informe al correo del veterinario
+  M->>Vet: Correo con PDF adjunto
+  C->>BD: Registra el envío en el log de reportes
+  opt sin registros en la semana
+    C->>M: Informe Sin registros de mortalidad esta semana
+  end

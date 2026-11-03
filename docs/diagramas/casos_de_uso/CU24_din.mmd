@@ -1,0 +1,20 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor V as Vendedor
+  participant DG as Don Gestión
+  participant A as ARCA / AFIP (WSFE)
+  participant BD as Cuenta corriente
+  actor C as Cliente
+  V->>DG: Confirma la entrega del pedido
+  DG->>DG: Determina el tipo de comprobante (A, B o C) según la condición de IVA
+  DG->>A: Solicita CAE por SOAP
+  alt AFIP responde
+    A-->>DG: CAE y fecha de vencimiento
+    DG->>BD: Guarda el CAE y actualiza el saldo del cliente
+    DG->>DG: Genera el PDF con el CAE
+    DG->>C: Envía la factura por email
+  else AFIP no responde o devuelve error
+    DG->>DG: Guarda el comprobante como pendiente
+    DG->>A: Reintenta a los 5 minutos
+  end

@@ -1,0 +1,37 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class Pedido {
+    +fecha datetime
+    +estado string
+    +total decimal
+  }
+  class ServicioFacturacion {
+    +emitir_factura(pedido)
+    -_preparar_datos(pedido)
+    -_solicitar_cae(datos, nro)
+  }
+  class Factura {
+    +nro_factura string
+    +tipo_comprobante char
+    +cae string
+    +cae_vto date
+    +total_factura decimal
+  }
+  class CuentaCorriente {
+    +tipo_movimiento string
+    +importe decimal
+    +saldo_parcial decimal
+  }
+  class DonGestion {
+    <<sistema externo>>
+  }
+  class ARCA_AFIP {
+    <<WSFE · SOAP>>
+    +solicitar_CAE(comprobante)
+  }
+  Pedido "1" --> "0..1" Factura
+  DonGestion ..> ServicioFacturacion : confirma entrega
+  ServicioFacturacion ..> ARCA_AFIP : solicita CAE
+  ServicioFacturacion ..> Factura : guarda CAE
+  Factura ..> CuentaCorriente : actualiza saldo

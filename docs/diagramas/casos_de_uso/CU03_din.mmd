@@ -1,0 +1,20 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Operario o Supervisor
+  participant App as App TILCOR (PWA)
+  participant WS as WebSocket (Channels)
+  participant BD as TimescaleDB
+  U->>App: Abre la sección IoT
+  App->>WS: Abre la conexión
+  WS->>BD: Último valor de cada sensor
+  BD-->>WS: Lecturas con timestamp
+  WS-->>App: Valores y estado por sensor
+  App-->>U: Panel con semáforo verde, amarillo o rojo
+  loop cada lectura nueva
+    WS-->>App: Valor actualizado
+    App-->>U: Refresca la tarjeta del sensor
+  end
+  alt sin conexión
+    App-->>U: Última versión en caché y hora del último dato
+  end

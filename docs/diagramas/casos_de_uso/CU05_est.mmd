@@ -1,0 +1,26 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class Usuario {
+    +username string
+    +password_hash string
+    +nombre_completo string
+    +rol string
+    +activo bool
+    +ultimo_acceso datetime
+  }
+  class Sensor {
+    +codigo string
+    +tipo tipo_sensor
+    +ubicacion string
+    +umbral_min decimal
+    +umbral_max decimal
+    +activo bool
+  }
+  class MotorAlertas {
+    +evaluar(registro)
+    -_umbrales(sensor)
+    -_nivel(valor, umbrales)
+  }
+  Usuario ..> Sensor : configura umbral_min y umbral_max
+  MotorAlertas ..> Sensor : lee umbrales vigentes

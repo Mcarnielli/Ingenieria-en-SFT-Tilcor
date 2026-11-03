@@ -1,0 +1,30 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class ConsumidorWebSocket {
+    +connect()
+    +enviar_lectura()
+  }
+  class Sensor {
+    +codigo string
+    +tipo tipo_sensor
+    +ubicacion string
+    +umbral_min decimal
+    +umbral_max decimal
+    +activo bool
+  }
+  class RegistroSensor {
+    +timestamp datetime
+    +valor decimal
+    +unidad string
+  }
+  class AlertaIoT {
+    +timestamp datetime
+    +nivel string
+    +valor decimal
+    +mensaje string
+    +revisada bool
+  }
+  Sensor "1" --> "*" RegistroSensor
+  ConsumidorWebSocket ..> RegistroSensor : emite lecturas nuevas
+  ConsumidorWebSocket ..> AlertaIoT : log de alertas del dia

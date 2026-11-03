@@ -1,0 +1,18 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Usuario Admin
+  participant App as App TILCOR (PWA)
+  participant LS as localStorage
+  U->>App: Toca Editar en el plan de implementación
+  App-->>U: Modal con un slider por fase (5 fases)
+  U->>App: Mueve los sliders
+  App-->>U: Porcentaje en tiempo real
+  alt guarda
+    U->>App: Guardar cambios
+    App->>LS: Guarda el progreso de las fases
+    App-->>U: Barras actualizadas con animación
+  else cierra sin guardar
+    U->>App: Cierra el modal
+    App-->>U: Mantiene el progreso anterior
+  end

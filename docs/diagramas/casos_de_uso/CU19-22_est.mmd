@@ -1,0 +1,51 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class Sensor {
+    +codigo string
+    +tipo tipo_sensor
+    +ubicacion string
+    +umbral_min decimal
+    +umbral_max decimal
+    +activo bool
+  }
+  class BrokerMosquitto {
+    <<externo>>
+  }
+  class GatewayMQTT {
+    +conectar(host, port)
+    -_on_message(msg)
+  }
+  class RegistroSensor {
+    +timestamp datetime
+    +valor decimal
+    +unidad string
+  }
+  class MotorAlertas {
+    +evaluar(registro)
+    -_umbrales(sensor)
+    -_nivel(valor, umbrales)
+  }
+  class AlertaIoT {
+    +timestamp datetime
+    +nivel string
+    +valor decimal
+    +mensaje string
+    +revisada bool
+  }
+  class Notificador {
+    +enviar_push()
+    +enviar_whatsapp()
+    +enviar_email()
+  }
+  class ConsumidorWebSocket {
+    +connect()
+    +enviar_lectura()
+  }
+  Sensor ..> BrokerMosquitto : publica JSON QoS 1
+  BrokerMosquitto ..> GatewayMQTT : entrega mensaje
+  GatewayMQTT ..> RegistroSensor : persiste
+  GatewayMQTT ..> MotorAlertas : evalua
+  MotorAlertas ..> AlertaIoT : registra
+  AlertaIoT ..> Notificador : notifica
+  GatewayMQTT ..> ConsumidorWebSocket : transmite al dashboard

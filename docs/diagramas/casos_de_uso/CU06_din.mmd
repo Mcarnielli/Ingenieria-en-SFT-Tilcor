@@ -1,0 +1,18 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  participant MA as MotorAlertas
+  participant BD as PostgreSQL
+  participant N as Notificador
+  actor Sup as Supervisor
+  participant Dash as Dashboard
+  MA->>MA: Evalúa el dato contra el umbral del sensor
+  MA->>MA: Clasifica como Warning (fuera de rango, sin superar 110 % del umbral)
+  MA->>BD: Registra la alerta (timestamp, origen, valor, umbral, nivel)
+  MA->>N: Solicita notificación con acción recomendada
+  N->>Sup: Push en menos de 2 minutos
+  MA->>Dash: Semáforo en amarillo
+  Sup->>Dash: Revisa y marca la alerta como resuelta
+  opt supervisor sin conexión
+    N->>N: Encola la notificación hasta recuperar conectividad
+  end

@@ -1,0 +1,15 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Supervisor o Propietario
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  U->>App: Abre el dashboard o Producción
+  App->>API: GET curva_vs_tabla del lote activo
+  API->>BD: Registros de producción del lote
+  BD-->>API: Postura real por semana
+  API->>BD: Valores de tabla genética de la raza
+  BD-->>API: Postura de tabla por semana
+  API-->>App: Dos series y desvío acumulado
+  App-->>U: Gráfica (real sólida, tabla punteada) y badge de desvío

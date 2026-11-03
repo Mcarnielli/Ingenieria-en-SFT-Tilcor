@@ -1,0 +1,17 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Veterinario o Supervisor
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  U->>App: Abre la sección Sanidad
+  App->>API: GET KPIs y mortalidad semanal
+  API->>BD: Registros del lote activo
+  BD-->>API: Mortalidad por semana y viabilidad
+  API-->>App: KPIs, historial y protocolo de alertas
+  App-->>U: KPIs de sanidad
+  opt mortalidad sobre el umbral
+    App-->>U: Alerta de mortalidad
+  end
+  App-->>U: Gráfica semanal con tendencia y protocolo (Normal, Advertencia, Crítico)

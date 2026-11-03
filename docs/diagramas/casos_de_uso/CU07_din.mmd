@@ -1,0 +1,21 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  participant MA as MotorAlertas
+  participant BD as PostgreSQL
+  participant N as Notificador
+  actor Sup as Supervisor
+  actor Vet as Veterinario externo
+  participant Dash as Dashboard
+  MA->>MA: Evalúa el dato y detecta nivel Crítico
+  MA->>BD: Registra la alerta (nivel Crítico, diferencia porcentual)
+  MA->>N: Solicita notificación urgente
+  N->>Sup: Push y WhatsApp en menos de 2 minutos
+  MA->>Dash: Semáforo en rojo con animación
+  opt mortalidad crítica
+    N->>Vet: Notificación al veterinario
+  end
+  Sup->>Dash: Toma acción correctiva y marca como resuelta
+  opt sin conectividad
+    N->>N: Encola con máxima prioridad
+  end

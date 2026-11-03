@@ -1,0 +1,15 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Usuario Admin
+  participant App as App TILCOR (PWA)
+  participant DG as Don Gestión
+  U->>App: Abre la sección Ventas (solo rol Admin)
+  App->>DG: Carga el iframe de la empresa
+  App-->>U: Muestra el loader
+  alt Don Gestión permite el iframe
+    DG-->>App: Módulo con datos reales
+    U->>DG: Interactúa (Ventas, Clientes, Cuentas, Productos, Informes)
+  else bloquea el iframe
+    App-->>U: Error y opción de abrir en nueva pestaña
+  end

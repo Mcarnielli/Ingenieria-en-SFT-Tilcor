@@ -1,0 +1,21 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor Sup as Supervisor
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  participant MA as MotorAlertas
+  Sup->>App: Abre la configuración de alertas IoT
+  App->>API: GET sensores y umbrales
+  API-->>App: Lista de sensores con umbral_min y umbral_max
+  Sup->>App: Elige un sensor y modifica los umbrales
+  alt mínimo mayor o igual al máximo
+    App-->>Sup: Error de validación, no guarda
+  else valores válidos
+    Sup->>App: Confirma
+    App->>API: PATCH sensor
+    API->>BD: Guarda umbral_min y umbral_max
+    API->>MA: Aplica los nuevos umbrales
+    API-->>App: Configuración guardada
+  end

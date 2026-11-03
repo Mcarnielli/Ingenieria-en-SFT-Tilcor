@@ -97,7 +97,8 @@ Reemplaza cuatro herramientas desconectadas (app Gallinero, planillas en papel, 
 
 Los entregables del TP2 están en la carpeta [`docs/entregables/`](./docs/entregables/):
 
-- `TILCOR_Desarrollo_Completo_PPIII.pdf` — **Documento único** con todo el desarrollo (Partes I a V)
+- `TILCOR_Desarrollo_Completo_PPIII.pdf` — **Documento único** de la tesis (PP2 + PP3), ordenado según el Checklist de Avances: capítulos 1 a 9 más conclusiones, glosario y referencias
+- `Checklist_Avances_TILCOR.docx` — Checklist de Avances completado, con sección y página de cada punto
 - `Cap8_9_Integracion_Especificaciones_TILCOR.docx` — Integración y Testing · Especificaciones del Sistema
 - `B1_Contrato_Alcance_TILCOR.docx` — Contrato de alcance y presupuesto (12 módulos, 5 fases, 15 indicadores)
 - `B5_Manual_Usuario_TILCOR.docx` — Manual de usuario (4 perfiles)

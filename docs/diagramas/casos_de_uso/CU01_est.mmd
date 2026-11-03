@@ -1,0 +1,47 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class Galpon {
+    +numero int
+    +capacidad_max int
+  }
+  class Raza {
+    +nombre string
+  }
+  class TablaGenetica {
+    +semana_edad int
+    +prod_tabla decimal
+    +viab_tabla decimal
+  }
+  class Lote {
+    +nro_lote string
+    +fecha_inicio date
+    +aves_iniciales int
+    +activo bool
+    +existencia_actual() int
+    +semana_edad_actual() int
+    +viabilidad_acumulada() decimal
+  }
+  class RegistroProduccion {
+    +fecha date
+    +semana_edad int
+    +huevos_totales int
+    +cajones int
+    +maples int
+    +aves_muertas int
+    +existencia int
+    +porc_postura() decimal
+    +desvio_vs_tabla() decimal
+    +tiene_alerta_produccion() bool
+  }
+  class RegistroProduccionViewSet {
+    +perform_create()
+    +resumen_semanal()
+    +curva_vs_tabla()
+  }
+  Galpon "1" --> "*" Lote
+  Raza "1" --> "*" Lote
+  Raza "1" --> "*" TablaGenetica
+  Lote "1" --> "*" RegistroProduccion
+  RegistroProduccionViewSet ..> RegistroProduccion : crea
+  RegistroProduccion ..> TablaGenetica : compara con

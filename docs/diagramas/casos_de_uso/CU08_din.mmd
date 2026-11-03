@@ -1,0 +1,23 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Supervisor u Operario
+  participant App as App TILCOR (PWA)
+  participant WS as WebSocket (Channels)
+  participant BD as TimescaleDB
+  U->>App: Abre la sección IoT
+  App->>WS: Establece la conexión
+  WS->>BD: Últimos valores de los 6 sensores
+  BD-->>WS: Lecturas
+  WS-->>App: Valores, gráficas de 6 horas y log de alertas del día
+  App-->>U: Panel con semáforo, gráficas y alertas
+  loop cada dato nuevo
+    WS-->>App: Lectura actualizada
+    App-->>U: Actualiza panel
+  end
+  opt historial
+    U->>App: Elige variable y rango de fechas
+    App->>BD: Consulta histórica
+    BD-->>App: Serie temporal
+    App-->>U: Gráfica del rango
+  end

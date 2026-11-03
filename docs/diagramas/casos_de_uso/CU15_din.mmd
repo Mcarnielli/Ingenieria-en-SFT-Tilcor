@@ -1,0 +1,19 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+sequenceDiagram
+  autonumber
+  actor U as Usuario
+  participant App as App TILCOR (PWA)
+  participant API as API REST
+  participant BD as PostgreSQL
+  U->>App: Ingresa usuario y contraseña
+  App->>API: POST credenciales
+  API->>BD: Busca el usuario y verifica el hash
+  alt credenciales correctas
+    API->>API: Genera tokens JWT con rol y galpones
+    API-->>App: Access token (15 min) y refresh token (7 días)
+    App-->>U: Dashboard con los módulos del rol y mensaje de bienvenida
+    Note over App: Admin ve todos los módulos. Empleado no ve Ventas
+  else credenciales incorrectas
+    API-->>App: 401
+    App-->>U: Mensaje de error y limpia la contraseña
+  end

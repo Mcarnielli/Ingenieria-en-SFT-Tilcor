@@ -1,0 +1,28 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#EAF2F8','primaryBorderColor':'#1A5276','primaryTextColor':'#1C1C1C','lineColor':'#1A5276','secondaryColor':'#FEF9E7','tertiaryColor':'#F2F3F4','fontFamily':'Arial','fontSize':'15px','noteBkgColor':'#FEF9E7','actorBkg':'#EAF2F8','actorBorder':'#1A5276','signalColor':'#1A5276'}}}%%
+classDiagram
+  direction LR
+  class MotorAlertas {
+    +evaluar(registro)
+    -_umbrales(sensor)
+    -_nivel(valor, umbrales)
+  }
+  class RegistroSensor {
+    +timestamp datetime
+    +valor decimal
+    +unidad string
+  }
+  class AlertaIoT {
+    +timestamp datetime
+    +nivel string
+    +valor decimal
+    +mensaje string
+    +revisada bool
+  }
+  class Notificador {
+    +enviar_push()
+    +enviar_whatsapp()
+    +enviar_email()
+  }
+  MotorAlertas ..> RegistroSensor : evalua
+  MotorAlertas ..> AlertaIoT : registra Critico
+  AlertaIoT ..> Notificador : push y WhatsApp
