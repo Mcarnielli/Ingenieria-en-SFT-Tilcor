@@ -42,3 +42,8 @@ mediafiles/
 # Coverage
 htmlcov/
 .coverage
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+node_modules/
