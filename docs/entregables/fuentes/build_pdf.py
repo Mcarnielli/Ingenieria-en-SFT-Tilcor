@@ -19,10 +19,7 @@ SRC = [
   ('p4', 'PARTE IV', 'Diseño y desarrollo del sistema', U + 'Tesis_Parte2_Desarrollo_fix.pdf', {1, 2}),
   ('p5', 'PARTE V', 'Integración, testing y especificaciones del sistema', O + 'Cap8_9_Integracion_Especificaciones_TILCOR.pdf', set()),
 ]
-ANEX = [
-  ('A', 'ANEXO A', 'Contrato de alcance y presupuesto', O + 'B1_Contrato_Alcance_TILCOR.pdf'),
-  ('B', 'ANEXO B', 'Manual de usuario (con capturas de la demo)', O + 'B5_Manual_Usuario_TILCOR.pdf'),
-]
+ANEX = []
 HEAD = {  # capítulos por parte (nivel 1), tal como figuran en cada documento
  'p1': ['RESUMEN EJECUTIVO', '1. INTRODUCCION', '2. PEDIDO DEL USUARIO', '3. RELEVAMIENTO ORGANIZACIONAL', '4. RELEVAMIENTO ESTRUCTURAL', '5. RELEVAMIENTO FUNCIONAL', '6. RELEVAMIENTO TECNOLOGICO', '7. RELEVAMIENTO DEL NEGOCIO', '8. DIAGNOSTICO DE LA SITUACION ACTUAL', '9. ANALISIS DE REQUERIMIENTOS', '10. PROPUESTA DEL SISTEMA', '11. CONCLUSIONES', 'REFERENCIAS BIBLIOGRAFICAS'],
  'p2': ['1. SIMBOLOGIA UTILIZADA', '2. CURSOGRAMA 1 — REGISTRO DIARIO DE PRODUCCION', '3. CURSOGRAMA 2 — GESTION DE VENTA Y FACTURACION', '4. CURSOGRAMA 3 — MONITOREO AMBIENTAL IoT DEL GALPON', '5. CURSOGRAMA 4 — CONTROL DE MORTALIDAD Y VIABILIDAD', '6. DIAGNOSTICO DE PROPUESTA'],
@@ -90,14 +87,13 @@ def front_pdf(entries, total_pages, front_len):
     t.setStyle(TableStyle(ts)); f += [t, PageBreak()]
     # --- guía de lectura y estado
     f.append(Paragraph('GUÍA DE LECTURA Y ESTADO DE IMPLEMENTACIÓN', sH))
-    f.append(Paragraph('Este documento reúne todo el desarrollo del proyecto en un único archivo. Está organizado en cinco partes y dos anexos. <b>Cada parte conserva su propia numeración de capítulos</b> (por ejemplo, el capítulo 8 de la Parte I, el de la Parte III y el de la Parte V son distintos); las referencias cruzadas indican siempre de qué parte se trata. Las menciones internas a «Informe Parte I», «Informe Parte II» y «Parte II: Desarrollo» corresponden, respectivamente, a las Partes I, III y IV de este documento.', sP))
+    f.append(Paragraph('Este documento reúne todo el desarrollo del proyecto en un único archivo. Está organizado en cinco partes. <b>Cada parte conserva su propia numeración de capítulos</b> (por ejemplo, el capítulo 8 de la Parte I, el de la Parte III y el de la Parte V son distintos); las referencias cruzadas indican siempre de qué parte se trata. Las menciones internas a «Informe Parte I», «Informe Parte II» y «Parte II: Desarrollo» corresponden, respectivamente, a las Partes I, III y IV de este documento.', sP))
     mp = [[Paragraph('<b>Parte</b>', sCB), Paragraph('<b>Contenido</b>', sCB)],
           [Paragraph('I', sC), Paragraph('Pedido del cliente, relevamiento organizacional, estructural, funcional, tecnológico y del negocio; diagnóstico y propuesta.', sC)],
           [Paragraph('II', sC), Paragraph('Cursogramas de la situación actual y propuesta para los cuatro procesos; diagnóstico comparativo.', sC)],
           [Paragraph('III', sC), Paragraph('Objetivo, límite y alcance del sistema; requerimientos; casos de uso y catálogo de fichas.', sC)],
           [Paragraph('IV', sC), Paragraph('Arquitectura, base de datos, módulos, seguridad, plan de pruebas y despliegue (diseño y código de referencia).', sC)],
-          [Paragraph('V', sC), Paragraph('<b>Capítulo 8 — Integración y Testing</b> y <b>capítulo 9 — Especificaciones del Sistema</b>, con resultados de pruebas reales.', sC)],
-          [Paragraph('Anexos', sC), Paragraph('A: Contrato de alcance y presupuesto. B: Manual de usuario con capturas de la demo funcional.', sC)]]
+          [Paragraph('V', sC), Paragraph('<b>Capítulo 8 — Integración y Testing</b> y <b>capítulo 9 — Especificaciones del Sistema</b>, con resultados de pruebas reales.', sC)]]
     t1 = Table(mp, colWidths=[22 * mm, 148 * mm]); t1.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), BLUE), ('GRID', (0, 0), (-1, -1), 0.4, colors.HexColor('#BFC5CA')), ('VALIGN', (0, 0), (-1, -1), 'TOP'), ('TOPPADDING', (0, 0), (-1, -1), 3), ('BOTTOMPADDING', (0, 0), (-1, -1), 3)]))
     f += [t1, Spacer(1, 8)]
     f.append(Paragraph('Estado de implementación (a la fecha de entrega)', S('h2', fontSize=11.5, leading=15, textColor=BLUE, fn='Helvetica-Bold', spaceAfter=5)))
@@ -106,7 +102,7 @@ def front_pdf(entries, total_pages, front_len):
           [Paragraph('Demo funcional (PWA)', sC), Paragraph('Implementado', sC), Paragraph('En línea en tilcorvercel.vercel.app. Perfiles Administrador y Empleado; inicio, producción, IoT, sanidad y ventas (Don Gestión por iframe). Datos de ejemplo en el navegador.', sC)],
           [Paragraph('Módulo IoT (MQTT → PostgreSQL)', sC), Paragraph('Implementado y probado', sC), Paragraph('Ingesta, validación, motor de alertas, simulador de sensores y auditoría por triggers. 29 pruebas automáticas aprobadas (cap. 8).', sC)],
           [Paragraph('Prueba con sensores reales', sC), Paragraph('Pendiente', sC), Paragraph('Se realiza en una visita a TILCOR; resultados a completar en la tabla 8.4.', sC)],
-          [Paragraph('Backend completo (API REST, JWT, clientes, facturación AFIP, reportes)', sC), Paragraph('Diseñado', sC), Paragraph('Especificado en las Partes III y IV; su construcción corresponde a las Fases 3 a 5 del Contrato de alcance (Anexo A).', sC)]]
+          [Paragraph('Backend completo (API REST, JWT, clientes, facturación AFIP, reportes)', sC), Paragraph('Diseñado', sC), Paragraph('Especificado en las Partes III y IV; su construcción corresponde a las Fases 3 a 5 del Contrato de alcance (documento aparte).', sC)]]
     t2 = Table(es, colWidths=[44 * mm, 28 * mm, 98 * mm]); t2.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), BLUE), ('GRID', (0, 0), (-1, -1), 0.4, colors.HexColor('#BFC5CA')), ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('BACKGROUND', (1, 1), (1, 2), G), ('BACKGROUND', (1, 3), (1, 3), A), ('BACKGROUND', (1, 4), (1, 4), Rr), ('TOPPADDING', (0, 0), (-1, -1), 3), ('BOTTOMPADDING', (0, 0), (-1, -1), 3)]))
     f += [t2]
@@ -150,7 +146,8 @@ def build():
                 disp = h if p['k'] == 'p5' else (h.title() if h.isupper() and False else h)
                 entries.append((lvl, disp, idx[i] + 1))
             plan.append(('src', p)); pos += len(p['pages'])
-        entries.append((0, 'ANEXOS', pos + 1)); plan.append(('adiv', None)); pos += 1
+        if anex:
+            entries.append((0, 'ANEXOS', pos + 1)); plan.append(('adiv', None)); pos += 1
         for a in anex:
             entries.append((1, '%s — %s' % (a['code'], a['title']), pos + 1)); plan.append(('anx', a)); pos += len(a['reader'].pages)
         return entries, plan, pos
