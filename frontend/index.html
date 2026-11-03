@@ -905,7 +905,10 @@ function toast(msg,type='ok'){
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
-function openModal(id){$(id).classList.add('open')}
+function openModal(id){
+  if(id==='modalPlan')abrirModalPlan();
+  $(id).classList.add('open');
+}
 function closeModal(id){$(id).classList.remove('open')}
 function confirmAction(){closeModal('modalConfirm');if(pendingAction)pendingAction()}
 
@@ -1260,12 +1263,6 @@ function guardarPlan(){
   toast('✅ Progreso actualizado');
 }
 
-// Sobreescribir openModal para plan
-const _openModal=openModal;
-function openModal(id){
-  if(id==='modalPlan')abrirModalPlan();
-  _openModal(id);
-}
 
 // ── SALUDO DINAMICO ───────────────────────────────────────────────────────────
 function initDashboard(){
